@@ -102,6 +102,20 @@ namespace AppLauncherUpdater
         {
             string localVersionFile = "./App/version.txt"; // Caminho do seu arquivo de versão local
 
+            // Verifica se o diretório './App' existe, senão cria
+            if (!Directory.Exists(Path.GetDirectoryName(localVersionFile)))
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(localVersionFile));
+            }
+
+            // Verifica se o arquivo version.txt existe
+            if (!File.Exists(localVersionFile))
+            {
+                // Cria o arquivo version.txt com a versão padrão "0.0"
+                Directory.CreateDirectory(Path.GetDirectoryName(localVersionFile)); // Cria o diretório ./App se não existir
+                File.WriteAllText(localVersionFile, "0.0");
+            }
+
             var url = $"{apiPath}/latest-version"; // URL para verificar a versão mais recente
 
             try
@@ -126,6 +140,7 @@ namespace AppLauncherUpdater
                 statusLabel.Text = $"Erro: {ex.Message}";
             }
         }
+
 
         private static async Task<string> GetLatestVersion(string url)
         {
