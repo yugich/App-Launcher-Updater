@@ -100,7 +100,7 @@ namespace AppLauncherUpdater
         string apiPath = "https://cap-auto-updater-d77eb3c8c485.herokuapp.com";
         private async void CheckForUpdatesAsync()
         {
-            string localVersionFile = "./App/version.txt"; // Caminho do seu arquivo de versão local
+            string localVersionFile = $"{extractionPath}version.txt"; // Caminho do seu arquivo de versão local
 
             // Verifica se o diretório './App' existe, senão cria
             if (!Directory.Exists(Path.GetDirectoryName(localVersionFile)))
@@ -154,7 +154,6 @@ namespace AppLauncherUpdater
             string downloadUrl = $"{apiPath}/storage"; // URL para baixar a versão mais recente
             string zipFilePath = "./Update.zip"; // Caminho temporário para o arquivo ZIP baixado
 
-            // Inicia o download do arquivo ZIP
             var response = await client.GetAsync(downloadUrl, HttpCompletionOption.ResponseHeadersRead);
             var totalBytes = response.Content.Headers.ContentLength ?? -1L;
             var canReportProgress = totalBytes != -1;
@@ -165,6 +164,8 @@ namespace AppLauncherUpdater
                 var totalRead = 0L;
                 var buffer = new byte[8192];
                 var isMoreToRead = true;
+                var stopwatch = new Stopwatch();
+                stopwatch.Start();
 
                 do
                 {
@@ -176,16 +177,19 @@ namespace AppLauncherUpdater
                     }
 
                     await fileStream.WriteAsync(buffer, 0, read);
-
                     totalRead += read;
+
                     if (canReportProgress)
                     {
                         var progress = (int)((totalRead * 100) / totalBytes);
                         progressBar.Value = progress;
-                        statusLabel.Text = $"Baixando atualização... {progress}%";
+                        var speed = (totalRead / 1024d / 1024d) / stopwatch.Elapsed.TotalSeconds; // Velocidade em MB/s
+                        statusLabel.Text = $"Baixando atualização... {progress}% ({totalRead / 1024d / 1024d:0.00} MB baixados a {speed:0.00} MB/s)";
                     }
                 }
                 while (isMoreToRead);
+
+                stopwatch.Stop();
             }
 
             // Atualiza o status para a extração de arquivos
@@ -193,7 +197,7 @@ namespace AppLauncherUpdater
             ExtractAndReplaceFiles(zipFilePath);
 
             // Atualiza o arquivo de versão
-            File.WriteAllText("./App/version.txt", latestVersion);
+            File.WriteAllText($"{extractionPath}version.txt", latestVersion);
 
             // Executa o GPA.exe
             StartApplication(); // Altere para o caminho correto, se necessário
@@ -227,7 +231,7 @@ namespace AppLauncherUpdater
             try
             {
                 // Lê o caminho do executável do arquivo path.txt
-                string executablePath = File.ReadAllText("./path.txt").Trim();
+                string executablePath = $"{extractionPath}GPA.exe";// File.ReadAllText("./path.txt").Trim();
 
                 // Inicia o aplicativo
                 Process.Start(executablePath);
