@@ -1,41 +1,78 @@
 # AppLauncherUpdater
 
-## Overview
-AppLauncherUpdater is a C# application designed to automatically update a Windows application. It checks for the latest version of the app, downloads it if available, and extracts the update for seamless user experience.
+AppLauncherUpdater is a .NET application designed to manage and update client-side applications by downloading and extracting the latest ZIP files from a server. It works in conjunction with the [Zip-Uploader-Downloader](https://github.com/yugich/Zip-Uploader-Downloader) server tool to ensure your application is always up-to-date.
 
 ## Features
-- Checks for the latest version of an application from a specified API.
-- Downloads and extracts the update if a new version is available.
-- Progress bar indicating the download progress.
-- Error handling for scenarios such as failed downloads or updates.
+
+- Check for the latest application version available on the server.
+- Download and extract application updates automatically.
+- Launch the updated application seamlessly.
 
 ## Prerequisites
-- .NET Framework
-- Newtonsoft.Json package for JSON handling
 
-## Setup and Installation
-1. Clone the repository or download the source code.
-2. Ensure .NET Framework is installed on your system.
-3. Open the solution in an IDE (e.g., Visual Studio) and restore any missing NuGet packages.
-4. Build and run the application.
+- [.NET 6.0](https://dotnet.microsoft.com/download/dotnet/6.0) (or higher)
+- [Zip-Uploader-Downloader](https://github.com/yugich/Zip-Uploader-Downloader) server running to provide updates.
 
-## Usage
-1. Run the `AppLauncherUpdater.exe`.
-2. The application will automatically check for updates.
-3. If an update is available, it will be downloaded and applied. The application will then restart.
-4. If no update is found, the application will start normally.
+## Installation
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/yourusername/AppLauncherUpdater.git
+   cd AppLauncherUpdater
+   ```
+
+2. Restore dependencies:
+
+   ```bash
+   dotnet restore
+   ```
+
+3. Build the application:
+
+   ```bash
+   dotnet build
+   ```
 
 ## Configuration
-- Update the `apiPath` variable in the `LauncherForm` class to point to your application's update API.
-- Place the local version of your application in `./App/version.txt`.
-- Adjust the `extractionPath` to specify where the updates should be extracted.
 
-## Troubleshooting
-- Ensure the application has permissions to access the internet and write to the local file system.
-- Check the API endpoint for availability and correct response format.
+1. Set the API path in `LauncherForm.Designer.cs` by replacing `"Set API Path Here"` with the URL of your `Zip-Uploader-Downloader` instance.
 
-## Contributing
-Feel free to fork the project and submit pull requests for any improvements or bug fixes.
+   ```csharp
+   string apiPath = "http://your-server-address";
+   ```
+
+2. Ensure the `Zip-Uploader-Downloader` server is running and accessible from the launcher.
+
+## Running the Launcher
+
+- Run the launcher from the command line:
+
+  ```bash
+  dotnet run --project AppLauncherUpdater
+  ```
+
+- Alternatively, build the project and execute the compiled `.exe` file located in the `bin/Debug/net6.0-windows` directory.
+
+## How It Works
+
+1. **Version Checking**: The launcher checks the current version of the application against the latest version available on the server using the `/latest-version` endpoint.
+
+2. **Download and Extract**: If a new version is available, the launcher downloads the ZIP file from the server and extracts it to the application directory.
+
+3. **Launch Application**: After updating, the launcher starts the updated application.
+
+## File Structure
+
+- `LauncherForm.cs`: Main form logic for checking updates and launching applications.
+- `LauncherForm.Designer.cs`: Contains UI elements and update logic.
+- `Program.cs`: Entry point for the application.
+- `AppLauncherUpdater.csproj`: Project file for .NET build configuration.
 
 ## License
-[Specify your License here or indicate if it's proprietary]
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a pull request or open an issue for any bug reports or feature requests.

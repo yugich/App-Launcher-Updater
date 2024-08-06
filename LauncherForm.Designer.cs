@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using Newtonsoft.Json.Linq;
+using System.Reflection;
 
 namespace AppLauncherUpdater
 {
@@ -96,11 +97,12 @@ namespace AppLauncherUpdater
 
         #endregion
 
-        string extractionPath = "./App/"; // Caminho de extração
-        string apiPath = "https://cap-auto-updater-d77eb3c8c485.herokuapp.com";
+        //string extractionPath = "./App/"; // Caminho de extração
+        string apiPath = "Set API Path Here";
         private async void CheckForUpdatesAsync()
         {
             string localVersionFile = $"{extractionPath}version.txt"; // Caminho do seu arquivo de versão local
+            
 
             // Verifica se o diretório './App' existe, senão cria
             if (!Directory.Exists(Path.GetDirectoryName(localVersionFile)))
@@ -199,7 +201,7 @@ namespace AppLauncherUpdater
             // Atualiza o arquivo de versão
             File.WriteAllText($"{extractionPath}version.txt", latestVersion);
 
-            // Executa o GPA.exe
+            // Executa o App.exe
             StartApplication(); // Altere para o caminho correto, se necessário
         }
 
@@ -230,8 +232,18 @@ namespace AppLauncherUpdater
         {
             try
             {
+                string exeNameFile = $"{extractionPath}exeName.txt";
+                // Verifica se o arquivo version.txt existe
+                if (!File.Exists(exeNameFile))
+                {
+                    // Cria o arquivo version.txt com a versão padrão "0.0"
+                    Directory.CreateDirectory(Path.GetDirectoryName(exeNameFile)); // Cria o diretório ./App se não existir
+                    File.WriteAllText(exeNameFile, "app.exe");
+                }
+
+
                 // Lê o caminho do executável do arquivo path.txt
-                string executablePath = $"{extractionPath}GPA.exe";// File.ReadAllText("./path.txt").Trim();
+                string executablePath = $"{extractionPath}{File.ReadAllText(exeNameFile)}";// File.ReadAllText("./path.txt").Trim();
 
                 // Inicia o aplicativo
                 Process.Start(executablePath);
